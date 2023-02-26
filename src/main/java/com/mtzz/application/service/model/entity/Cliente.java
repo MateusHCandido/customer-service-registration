@@ -1,9 +1,9 @@
 package com.mtzz.application.service.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -12,7 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Cliente
 {
-    @Id @EqualsAndHashCode.Include
+    @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -25,4 +26,6 @@ public class Cliente
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "data_cadastro")
     private LocalDate dataCadastro;
+
+
 }
