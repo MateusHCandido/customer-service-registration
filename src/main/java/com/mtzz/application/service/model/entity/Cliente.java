@@ -23,5 +23,6 @@ public class Cliente
     private String cpf;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
+    @Column(name = "data_cadastro")
     private LocalDate dataCadastro;
 }
