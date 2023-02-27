@@ -4,9 +4,10 @@ import com.mtzz.application.service.controller.dto.ClienteRequest;
 import com.mtzz.application.service.mapper.ClienteMapper;
 import com.mtzz.application.service.model.entity.Cliente;
 import com.mtzz.application.service.repository.ClienteRepository;
-import com.mtzz.application.service.services.exceptions.CPFAlreadyExistsException;
-import com.mtzz.application.service.services.exceptions.CreateClientException;
+import com.mtzz.application.service.services.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Objects;
 
 public class ClienteService
 {
@@ -14,8 +15,18 @@ public class ClienteService
     private ClienteRepository clienteRepository;
 
 
-    public void checkIfCpfExists(String cpf)
+    public void cpfValidation(String cpf)
     {
+        if(cpf.isBlank())
+        {
+            throw new InvalidCpfException("CPF cannot be blank");
+        }else if(cpf.contains(".") || cpf.contains("-"))
+        {
+            throw new InvalidCpfException("Only numbers are accepted in the CPF");
+        }else if(cpf.length() != 11)
+        {
+            throw new InvalidCpfException("The CPF must contain 11 numbers");
+        }
         Cliente searchReturn = clienteRepository.findByCpf(cpf);
         if(searchReturn != null)
         {
@@ -25,16 +36,53 @@ public class ClienteService
 
     public Cliente addCliente(ClienteRequest clienteRequest)
     {
-        if(clienteRequest.getNome() == null)
+        if(clienteRequest.getNome().isBlank())
         {
             throw new CreateClientException("Name cannot be blank");
-        }else if(clienteRequest.getCpf() == null)
-        {
-            throw new CreateClientException("Cpf cannot be blank");
         }
-        checkIfCpfExists(clienteRequest.getCpf());
+        cpfValidation(clienteRequest.getCpf());
         Cliente cliente = ClienteMapper.toClient(clienteRequest);
         clienteRepository.save(cliente);
         return cliente;
+    }
+
+    public Cliente findCliente(Long id)
+    {
+        Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ClientNotFoundException(id));
+        return cliente;
+    }
+
+    public void updateCliente(Long id, String name, String cpf)
+    {
+        Cliente cliente = findCliente(id);
+
+        if(name == null && cpf == null)
+        {throw new UpdateClientException("No data has been entered for update");}
+        else if(Objects.equals(name, ""))
+        {
+            throw new UpdateClientException("Name cannot be blank");
+        }
+        if(cpf == null)
+        {
+            cliente.setNome(name);
+        }
+        else if(name == null)
+        {
+            cpfValidation(cpf);
+            cliente.setCpf(cpf);
+        }
+        else
+        {
+            cpfValidation(cpf);
+            cliente.setNome(name);
+            cliente.setCpf(cpf);
+        }
+        clienteRepository.save(cliente);
+    }
+
+    public void deleteCliente(Long id)
+    {
+        Cliente cliente = findCliente(id);
+        clienteRepository.delete(cliente);
     }
 }
