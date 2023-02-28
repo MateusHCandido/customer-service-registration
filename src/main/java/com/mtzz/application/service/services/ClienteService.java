@@ -6,9 +6,11 @@ import com.mtzz.application.service.model.entity.Cliente;
 import com.mtzz.application.service.repository.ClienteRepository;
 import com.mtzz.application.service.services.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+@Service
 public class ClienteService
 {
     @Autowired
@@ -52,10 +54,12 @@ public class ClienteService
         return cliente;
     }
 
-    public void updateCliente(Long id, String name, String cpf)
+    public void updateCliente(Long id, ClienteRequest newDataRequest)
     {
-        Cliente cliente = findCliente(id);
 
+        Cliente cliente = findCliente(id);
+        String name = newDataRequest.getNome();
+        String cpf = newDataRequest.getCpf();
         if(name == null && cpf == null)
         {throw new UpdateClientException("No data has been entered for update");}
         else if(Objects.equals(name, ""))

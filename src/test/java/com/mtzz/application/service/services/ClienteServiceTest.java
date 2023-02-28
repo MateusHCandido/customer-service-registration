@@ -103,13 +103,16 @@ public class ClienteServiceTest {
     public void should_return_client_updated()
     {
         ClienteRequest primaryCliente = ClienteBuilder.generateClient().now();
+        ClienteRequest newDataRequest = ClienteBuilder.generateClient().now();
         String name = "Jose Amado";
         String cpf = "33333333333";
+        newDataRequest.setNome(name);
+        newDataRequest.setCpf(cpf);
 
         when(clienteService.addCliente(primaryCliente)).thenReturn(new Cliente());
         Cliente cliente = clienteService.addCliente(primaryCliente);
         when(clienteRepository.findById(1L)).thenReturn(Optional.ofNullable(cliente));
-        clienteService.updateCliente(cliente.getId(), name, cpf);
+        clienteService.updateCliente(cliente.getId(),newDataRequest);
         assertEquals(cliente.getNome(), name);
         assertEquals(cliente.getCpf(), cpf);
     }
@@ -118,12 +121,15 @@ public class ClienteServiceTest {
     public void should_return_client_update_on_name_field()
     {
         ClienteRequest primaryCliente = ClienteBuilder.generateClient().now();
+        ClienteRequest newDataRequest = ClienteBuilder.generateClient().now();
         String name = "Jose Amado";
+        newDataRequest.setNome(name);
+        newDataRequest.setCpf(null);
 
         when(clienteService.addCliente(primaryCliente)).thenReturn(new Cliente());
         Cliente cliente = clienteService.addCliente(primaryCliente);
         when(clienteRepository.findById(1L)).thenReturn(Optional.ofNullable(cliente));
-        clienteService.updateCliente(cliente.getId(), name, null);
+        clienteService.updateCliente(cliente.getId(), newDataRequest);
         assertEquals(cliente.getNome(), name);
     }
 
@@ -131,12 +137,15 @@ public class ClienteServiceTest {
     public void should_return_client_update_on_cpf_field()
     {
         ClienteRequest primaryCliente = ClienteBuilder.generateClient().now();
+        ClienteRequest newDataRequest = ClienteBuilder.generateClient().now();
         String cpf = "33333333333";
+        newDataRequest.setNome(null);
+        newDataRequest.setCpf(cpf);
 
         when(clienteService.addCliente(primaryCliente)).thenReturn(new Cliente());
         Cliente cliente = clienteService.addCliente(primaryCliente);
         when(clienteRepository.findById(1L)).thenReturn(Optional.ofNullable(cliente));
-        clienteService.updateCliente(cliente.getId(), null, cpf);
+        clienteService.updateCliente(cliente.getId(), newDataRequest);
         assertEquals(cliente.getCpf(), cpf);
     }
 
@@ -144,11 +153,14 @@ public class ClienteServiceTest {
     public void should_return_update_error_when_trying_to_update_name_and_cpf_fields()
     {
         ClienteRequest primaryCliente = ClienteBuilder.generateClient().now();
+        ClienteRequest newDataRequest = ClienteBuilder.generateClient().now();
+        newDataRequest.setNome(null);
+        newDataRequest.setCpf(null);
 
         when(clienteService.addCliente(primaryCliente)).thenReturn(new Cliente());
         Cliente cliente = clienteService.addCliente(primaryCliente);
         when(clienteRepository.findById(1L)).thenReturn(Optional.ofNullable(cliente));
-        clienteService.updateCliente(1L, null, null);
+        clienteService.updateCliente(1L, newDataRequest);
     }
 
 
@@ -156,37 +168,44 @@ public class ClienteServiceTest {
     public void should_return_update_error_when_trying_to_update_name_field()
     {
         ClienteRequest primaryCliente = ClienteBuilder.generateClient().now();
+        ClienteRequest newDataRequest = ClienteBuilder.generateClient().now();
         String name = "";
+        newDataRequest.setNome(name);
+        newDataRequest.setCpf(null);
 
         when(clienteService.addCliente(primaryCliente)).thenReturn(new Cliente());
         Cliente cliente = clienteService.addCliente(primaryCliente);
         when(clienteRepository.findById(1L)).thenReturn(Optional.ofNullable(cliente));
-        clienteService.updateCliente(cliente.getId(), name, null);
+        clienteService.updateCliente(cliente.getId(), newDataRequest);
     }
 
     @Test(expected = InvalidCpfException.class)
     public void should_return_update_error_when_trying_to_update_cpf_field()
     {
         ClienteRequest primaryCliente = ClienteBuilder.generateClient().now();
+        ClienteRequest newDataRequest = ClienteBuilder.generateClient().now();
         String cpf = "";
+        newDataRequest.setNome(null);
+        newDataRequest.setCpf(cpf);
 
         when(clienteService.addCliente(primaryCliente)).thenReturn(new Cliente());
         Cliente cliente = clienteService.addCliente(primaryCliente);
         when(clienteRepository.findById(1L)).thenReturn(Optional.ofNullable(cliente));
-        clienteService.updateCliente(cliente.getId(), null, cpf);
+        clienteService.updateCliente(cliente.getId(), newDataRequest);
     }
 
     @Test(expected = CPFAlreadyExistsException.class)
     public void should_return_update_error_when_trying_to_update_cpf_field_because_cpf_already_exists()
     {
         ClienteRequest primaryCliente = ClienteBuilder.generateClient().now();
-        String cpf = primaryCliente.getCpf();
+        ClienteRequest newDataRequest = ClienteBuilder.generateClient().now();
+        newDataRequest.setCpf(primaryCliente.getCpf());
 
         when(clienteService.addCliente(primaryCliente)).thenReturn(new Cliente());
         Cliente cliente = clienteService.addCliente(primaryCliente);
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
-        when(clienteRepository.findByCpf(cpf)).thenReturn(cliente);
-        clienteService.updateCliente(cliente.getId(), null, cpf);
+        when(clienteRepository.findByCpf(primaryCliente.getCpf())).thenReturn(cliente);
+        clienteService.updateCliente(cliente.getId(), newDataRequest);
     }
 
     @Test(expected = ClientNotFoundException.class)
