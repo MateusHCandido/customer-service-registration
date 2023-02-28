@@ -12,7 +12,7 @@ public class ClienteMapper
         cliente.setId(clienteRequest.getId());
         cliente.setNome(clienteRequest.getNome());
         cliente.setCpf(clienteRequest.getCpf());
-        cliente.setDataCadastro(clienteRequest.getDataCadastro());
+        //cliente.setDataCadastro(clienteRequest.getDataCadastro());
         return cliente;
     }
 }
